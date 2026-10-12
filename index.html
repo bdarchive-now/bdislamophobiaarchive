@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bangladesh Islamophobia Archive | Public Documentation Project</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    h1, h2, h3, .brand-font { font-family: 'Cinzel', serif; }
+    .serif-text { font-family: 'Newsreader', serif; }
+  </style>
+</head>
+<body class="text-slate-900 min-h-screen flex flex-col">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="#archive" class="flex items-center space-x-3">
+        <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
+        <span class="font-bold tracking-tight text-lg sm:text-xl text-slate-900 brand-font">BD Islamophobia Archive</span>
+      </a>
+
+      <!-- Navigation Menus -->
+      <nav class="flex items-center space-x-4 sm:space-x-8 text-sm font-medium text-slate-600">
+        <a href="#archive" class="hover:text-red-700 transition">Archive</a>
+        <button onclick="openModal('submit-modal')" class="hover:text-red-700 transition">Submit a Case</button>
+        <button onclick="openModal('disclaimer-modal')" class="hover:text-red-700 transition">Disclaimer</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO & SUMMARY METRICS -->
+  <section class="bg-slate-900 text-white py-14 px-4 sm:px-6 lg:px-8 border-b border-slate-800">
+    <div class="max-w-5xl mx-auto text-center space-y-4">
+      <div class="inline-block px-3 py-1 bg-red-950/80 border border-red-700/50 rounded-full text-xs font-semibold uppercase tracking-wider text-red-300">
+        Independent Documentation Project
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+        Documenting Anti-Muslim Hostility & Hate in Bangladesh
+      </h1>
+      <p class="text-slate-300 max-w-3xl mx-auto text-base sm:text-lg serif-text leading-relaxed">
+        An open-access empirical archive recording incidents of crime, cultural vilification, online vitriol, and institutional prejudice with verified primary source documentation.
+      </p>
+
+      <!-- Dynamic Live Stat Counters -->
+      <div class="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto">
+        <div class="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
+          <div id="stat-total" class="text-2xl sm:text-3xl font-bold text-white">...</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Total Cases</div>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
+          <div id="stat-crime" class="text-2xl sm:text-3xl font-bold text-red-400">...</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Crime & Physical</div>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
+          <div id="stat-harassment" class="text-2xl sm:text-3xl font-bold text-amber-400">...</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Online & Comments</div>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-lg p-4">
+          <div id="stat-culture" class="text-2xl sm:text-3xl font-bold text-blue-400">...</div>
+          <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Art, Media & Inst.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH & CATEGORY FILTER BAR -->
+  <section id="archive" class="bg-white border-b border-slate-200 py-6 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto space-y-4">
+      <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <!-- Search Input -->
+        <div class="relative w-full md:w-96">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Search by keywords, actor, title..." 
+            oninput="applyFilter()"
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 focus:bg-white transition"
+          />
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
+        <!-- Result Status -->
+        <div id="results-count" class="text-xs text-slate-500 font-semibold uppercase tracking-wider">
+          Loading archive data...
+        </div>
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="flex flex-wrap gap-2 pt-2" id="category-pills">
+        <button onclick="setCategory('All')" data-cat="All" class="category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-white transition">All Entries</button>
+        <button onclick="setCategory('Crime & Physical Attacks')" data-cat="Crime & Physical Attacks" class="category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Crime & Physical Attacks</button>
+        <button onclick="setCategory('Art, Media & Culture')" data-cat="Art, Media & Culture" class="category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Art, Media & Culture</button>
+        <button onclick="setCategory('Online Harassment, Comments & Disinformation')" data-cat="Online Harassment, Comments & Disinformation" class="category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Online Harassment, Comments & Disinformation</button>
+        <button onclick="setCategory('Institutional & Systemic Discrimination')" data-cat="Institutional & Systemic Discrimination" class="category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Institutional & Systemic Discrimination</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN ARCHIVE FEED -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+    <div id="cases-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Dynamic Case Cards will be injected here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden text-center py-20">
+      <p class="text-slate-500 text-lg">No documented incidents match your current search criteria.</p>
+    </div>
+  </main>
+
+  <!-- CASE DOSSIER MODAL -->
+  <div id="dossier-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+      <div class="p-6 border-b border-slate-100 flex items-start justify-between">
+        <div>
+          <span id="modal-category" class="inline-block px-2.5 py-1 rounded text-xs font-semibold uppercase bg-slate-100 text-slate-800 mb-2">Category</span>
+          <h3 id="modal-title" class="text-xl font-bold text-slate-900 leading-snug">Case Title</h3>
+          <div class="text-xs text-slate-500 mt-1" id="modal-date">Date</div>
+        </div>
+        <button onclick="closeModal('dossier-modal')" class="text-slate-400 hover:text-slate-700 text-2xl font-bold leading-none">&times;</button>
+      </div>
+      
+      <div class="p-6 space-y-5">
+        <!-- Actor Section -->
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3.5">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Perpetrator / Actor</div>
+          <div id="modal-actor" class="text-sm font-semibold text-slate-900 mt-0.5">Actor Name</div>
+        </div>
+
+        <!-- Narrative Summary -->
+        <div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Incident Record & Narrative</div>
+          <p id="modal-summary" class="text-sm text-slate-700 serif-text leading-relaxed whitespace-pre-line"></p>
+        </div>
+
+        <!-- Media Display (Image / Video) -->
+        <div id="modal-media-container" class="space-y-4"></div>
+
+        <!-- Source Link Button -->
+        <div id="modal-news-container" class="pt-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMIT A CASE MODAL -->
+  <div id="submit-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-900">Submit an Incident for Review</h3>
+        <button onclick="closeModal('submit-modal')" class="text-slate-400 hover:text-slate-700 text-2xl font-bold">&times;</button>
+      </div>
+      <div class="py-4 text-sm text-slate-600 space-y-3">
+        <p>To submit primary evidence, social media archives, news reports, or video recordings for verification:</p>
+        <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-500">
+          <li>Ensure links include permanent URLs or archived snapshots (e.g. Wayback Machine).</li>
+          <li>For screenshots, please preserve timestamps and visible author profiles.</li>
+          <li>Submissions undergo rigorous fact-checking before entry into the public ledger.</li>
+        </ul>
+        <div class="pt-3">
+          <a href="mailto:bdarchive.now@gmail.com?subject=New%20Archive%20Submission" class="inline-block w-full text-center py-2.5 px-4 bg-slate-900 text-white rounded-lg font-semibold hover:bg-slate-800 transition">
+            Email Evidence to Editorial Team
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER MODAL -->
+  <div id="disclaimer-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 border border-slate-200">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <h3 class="text-lg font-bold text-slate-900">Methodology & Legal Disclaimer</h3>
+        <button onclick="closeModal('disclaimer-modal')" class="text-slate-400 hover:text-slate-700 text-2xl font-bold">&times;</button>
+      </div>
+      <div class="py-4 text-xs sm:text-sm text-slate-600 space-y-3 leading-relaxed serif-text">
+        <p><strong>Non-Partisan Archival Mandate:</strong> The Bangladesh Islamophobia Archive is an independent, non-partisan documentation effort dedicated to preserving public-interest records of religious discrimination, vilification, hate speech, and physical harm.</p>
+        <p><strong>Verification Standard:</strong> Incidents are compiled from verified mainstream news reports, authenticated audiovisual documentation, and open-source intelligence. We do not endorse vigilante actions or extrajudicial rhetoric.</p>
+        <p><strong>Right to Clarification:</strong> Individuals or institutions cited are entitled to submit corrections, context, or legal rectifications to the editorial team.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-8 px-4 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto space-y-2">
+      <p class="font-semibold text-slate-700">Bangladesh Islamophobia Archive</p>
+      <p>Independent Open-Source Documentation & Research Portal &copy; 2026</p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT: Google Sheets Fetching & Filtering -->
+  <script>
+    // YOUR LIVE GOOGLE SHEET ID
+    const SHEET_ID = '1Hv_fl3cnBq6o1RXZ29mLCROUu4G9fIGVsoQ9lod3cZ4';
+    const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+    let allCases = [];
+    let currentCategory = 'All';
+
+    // Fetch and Parse Google Sheets Data
+    async function loadData() {
+      try {
+        const response = await fetch(GVIZ_URL);
+        const text = await response.text();
+        
+        // Strip Google's JSON wrapper
+        const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        const data = JSON.parse(jsonString);
+        
+        const rows = data.table.rows;
+        allCases = rows.map((r, index) => {
+          const c = r.c;
+          return {
+            id: index + 1,
+            title: c[0]?.v || 'Untitled Incident',
+            date: c[1]?.f || c[1]?.v || 'Undated',
+            actor: c[2]?.v || 'Unspecified / Anonymous',
+            category: c[3]?.v || 'General',
+            summary: c[4]?.v || 'No detailed summary provided.',
+            newsLink: c[5]?.v || '',
+            imageLink: c[6]?.v || '',
+            videoLink: c[7]?.v || ''
+          };
+        }).filter(item => item.title !== 'Title'); // Exclude potential header row duplication
+
+        updateCounters();
+        applyFilter();
+      } catch (err) {
+        console.error('Error fetching sheet:', err);
+        document.getElementById('results-count').innerText = 'Unable to load live records. Verify sheet sharing settings.';
+      }
+    }
+
+    // Update Live Metrics
+    function updateCounters() {
+      document.getElementById('stat-total').innerText = allCases.length;
+      
+      const crime = allCases.filter(c => c.category.includes('Crime')).length;
+      const harassment = allCases.filter(c => c.category.includes('Harassment') || c.category.includes('Comments')).length;
+      const culture = allCases.filter(c => c.category.includes('Art') || c.category.includes('Institutional')).length;
+      
+      document.getElementById('stat-crime').innerText = crime;
+      document.getElementById('stat-harassment').innerText = harassment;
+      document.getElementById('stat-culture').innerText = culture;
+    }
+
+    // Filter Logic
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-pill').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = 'category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 text-white transition';
+        } else {
+          btn.className = 'category-pill px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition';
+        }
+      });
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const query = document.getElementById('search-input').value.toLowerCase().trim();
+      
+      const filtered = allCases.filter(item => {
+        const matchesCategory = (currentCategory === 'All') || (item.category === currentCategory);
+        const matchesSearch = item.title.toLowerCase().includes(query) ||
+                              item.actor.toLowerCase().includes(query) ||
+                              item.summary.toLowerCase().includes(query);
+        return matchesCategory && matchesSearch;
+      });
+
+      renderCases(filtered);
+    }
+
+    // Render Cards in Grid
+    function renderCases(cases) {
+      const grid = document.getElementById('cases-grid');
+      const empty = document.getElementById('empty-state');
+      const countLabel = document.getElementById('results-count');
+
+      countLabel.innerText = `Showing ${cases.length} of ${allCases.length} records`;
+
+      if (cases.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = cases.map(c => `
+        <article class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col overflow-hidden">
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-500 mb-2.5">
+                <span class="font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${escapeHtml(c.category)}</span>
+                <span>${escapeHtml(c.date)}</span>
+              </div>
+              <h4 class="font-bold text-slate-900 text-base leading-snug line-clamp-2 mb-2">${escapeHtml(c.title)}</h4>
+              <p class="text-xs text-slate-600 serif-text line-clamp-3 mb-3">${escapeHtml(c.summary)}</p>
+            </div>
+            
+            <div class="pt-3 border-t border-slate-100 space-y-2">
+              <div class="text-xs text-slate-500 truncate">
+                <strong class="text-slate-700">Actor:</strong> ${escapeHtml(c.actor)}
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <button onclick="openDossier(${c.id})" class="text-xs font-semibold text-red-700 hover:text-red-900 transition flex items-center">
+                  View Full Record &rarr;
+                </button>
+                ${c.imageLink || c.videoLink ? '<span class="text-[10px] bg-red-50 text-red-700 font-semibold px-2 py-0.5 rounded">Media Attached</span>' : ''}
+              </div>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Case Detail Modal
+    function openDossier(id) {
+      const item = allCases.find(c => c.id === id);
+      if (!item) return;
+
+      document.getElementById('modal-title').innerText = item.title;
+      document.getElementById('modal-category').innerText = item.category;
+      document.getElementById('modal-date').innerText = `Documented Date: ${item.date}`;
+      document.getElementById('modal-actor').innerText = item.actor;
+      document.getElementById('modal-summary').innerText = item.summary;
+
+      const mediaContainer = document.getElementById('modal-media-container');
+      mediaContainer.innerHTML = '';
+
+      // Embedded Image
+      if (item.imageLink) {
+        mediaContainer.innerHTML += `
+          <div>
+            <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Screenshot / Primary Image</div>
+            <a href="${item.imageLink}" target="_blank" rel="noopener">
+              <img src="${item.imageLink}" alt="Evidence" class="w-full rounded-lg border border-slate-200 max-h-80 object-cover hover:opacity-95" />
+            </a>
+          </div>
+        `;
+      }
+
+      // Embedded Video
+      if (item.videoLink) {
+        const ytId = getYouTubeId(item.videoLink);
+        if (ytId) {
+          mediaContainer.innerHTML += `
+            <div>
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Audiovisual Documentation</div>
+              <div class="aspect-video w-full rounded-lg overflow-hidden border border-slate-200">
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ytId}" frameborder="0" allowfullscreen></iframe>
+              </div>
+            </div>
+          `;
+        } else {
+          mediaContainer.innerHTML += `
+            <a href="${item.videoLink}" target="_blank" rel="noopener" class="inline-block text-xs font-semibold text-blue-600 hover:underline">
+              &播放 Watch External Video Source &nearr;
+            </a>
+          `;
+        }
+      }
+
+      // News link button
+      const newsContainer = document.getElementById('modal-news-container');
+      if (item.newsLink) {
+        newsContainer.innerHTML = `
+          <a href="${item.newsLink}" target="_blank" rel="noopener" class="inline-flex items-center text-xs font-semibold bg-slate-900 text-white px-3.5 py-2 rounded-lg hover:bg-slate-800 transition">
+            View Original Source / Report &nearr;
+          </a>
+        `;
+      } else {
+        newsContainer.innerHTML = '';
+      }
+
+      openModal('dossier-modal');
+    }
+
+    // Modal Helpers
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function escapeHtml(str) { return (str || '').replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+    function getYouTubeId(url) {
+      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      return match ? match[1] : null;
+    }
+
+    // Load on start
+    window.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
